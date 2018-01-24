@@ -1,3 +1,5 @@
+NOT MINE, I don't know coffee script, like at all but I just hacked this a little to add different data and views. 
+
 Cryptocurrency widget
 =====================
 
