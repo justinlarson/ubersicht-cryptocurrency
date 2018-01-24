@@ -3,7 +3,7 @@
 ###
 command: """
     echo "[
-        `curl -s https://api.coinmarketcap.com/v1/ticker/`,
+        `curl -s https://api.coinmarketcap.com/v1/ticker/?limit=250`,
         `cat ~/.cryptoholdings.json`
     ]"
 """
@@ -16,7 +16,7 @@ render: (output) ->
     for coin, attrs of holdingsArray
         boxes += @genHtmlBox(attrs.ticker) + "\n"
     boxes += @genHtmlBox('total', 'USD')
-
+    console.log(boxes)
     return boxes
 
 ###
@@ -28,9 +28,9 @@ render: (output) ->
 ###
 genHtmlBox: (coinName, ticker = coinName) ->
     return """
-    <div class='#{coinName.toLowerCase()} box'>
-      <div class='ticker'>1 #{ticker.toUpperCase()}</div>
-      <div class='badge lastUpdated'>Last Updated</div>
+    <div class='#{coinName.toLowerCase()} box '>
+      <div class='ticker'> #{ticker.toUpperCase()}</div>
+      <div class='badge lastUpdated' >Last Updated</div>
       <div class='price'></div>
     </div>
     """
@@ -64,7 +64,7 @@ update: (output, domEl) ->
 
   # update 'total' portfolio value rounded to cents
   totalBox = $(domEl).find('.total')
-  @updateBox(totalBox, @roundAmount(portfolio, 2), fmtDate)
+  @updateBox(totalBox,'$'+ @numberWithCommas(@roundAmount(portfolio, 2)), fmtDate)
 
 ###
     Finds a coin to generate data for from json response
@@ -101,6 +101,9 @@ roundAmount: (amount, precision) ->
 
     return rv
 
+numberWithCommas: (x) ->
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+
 ###
     Gets price information for a given coin
 
@@ -113,20 +116,23 @@ roundAmount: (amount, precision) ->
 getPriceInfo: (json, coin) ->
   price = json['price_usd']
   change = json['percent_change_1h']
+  rank = json['rank']
   color = if (change >= 0) then 'green' else 'red'
+  emoji =  if (change >= 0) then '🚀' else '🚧'
   value = coin.holdings * price
+  hodl = coin.holdings
 
   return {html: """
-    <div class='price default'>$ #{@roundAmount(price, coin.round)}<div>
-    <div class='badge default'>Last Price</div>
-    <div class='value #{color}'>$ #{@roundAmount(value, 2)}</div>
-    <div class='currency default'>USD</div>
+    <div class='price #{color}'>$ #{@numberWithCommas(@roundAmount(price, coin.round))}<div>
+    <!--<div class='badge default'>Last Price</div>-->
+    <div class='value '>$ #{@numberWithCommas(@roundAmount(value, 2))}</div>
+    <div class='currency default'>Hodling: #{@numberWithCommas(hodl)} RANK: #{rank } #{emoji} #{change}%</div>
   """, value: value}
 
 
 style: """
-  bottom: 5%
-  left: 91%
+  bottom: 0%
+  left: 6%
   color: white
   font-family: 'Helvetica Neue'
   font-weight: 100
@@ -135,23 +141,36 @@ style: """
   width: 200px
   text-align: center
   .box
-    padding: 3px
-    border: 1px solid rgba(#FFF, 50%)
-    font-size: 24px
+    padding: 2px
+    opacitiy: .3
+    border: 1px solid black
+    font-size: 18px
     .price
-      font-size: 32px
+    
+      font-size: 20px
     .ticker, .lastUpdated
       text-align: left
     .currency, .badge
       text-align: right
-    .currency, .ticker, .badge, .lastUpdated
+    .currency, .badge, .lastUpdated
+      font-size: 8px
+      font-weight: 500
+      letter-spacing: 1px
+    .ticker
       font-size: 10px
       font-weight: 500
       letter-spacing: 1px
+      margin: 0px
+      color: white
+    
     .green
-      color: green
+      color: white
+      background-color: rgba(0, 255, 0, 0.5)
+      
     .red
-      color: red
+        background-color: rgba(255, 0, 0, 0.5)
+        color: white
+        
     .default
       color: white
 """
