@@ -19,7 +19,7 @@ Example:
 {
     "ark": { "ticker": "ARK", "round": 2, "holdings": 2.98099 },
     "bitcoin": { "ticker": "BTC", "round": 0, "holdings": 7 },
-    "litecoin": { "ticker": "LTC", "round": 2, "holdings": 5.41853337 },
+    "litecoin": { "ticker": "LTC", "round": 2, "holdings": 5.41853337 }
 }
 ```
 
