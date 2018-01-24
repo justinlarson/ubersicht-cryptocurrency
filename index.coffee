@@ -116,9 +116,13 @@ numberWithCommas: (x) ->
 getPriceInfo: (json, coin) ->
   price = json['price_usd']
   change = json['percent_change_1h']
+  change_24hr = json['percent_change_24h']
+  change_7d = json['percent_change_7d']
   rank = json['rank']
   color = if (change >= 0) then 'green' else 'red'
-  emoji =  if (change >= 0) then '🚀' else '🚧'
+  emoji =  if (change >= 0) then '🚀' else '🔻'
+  emoji2 =  if (change_24hr >= 0) then '🚀' else '🔻'
+  emoji3 =  if (change_7d >= 0) then '🚀' else '🔻'
   value = coin.holdings * price
   hodl = coin.holdings
 
@@ -126,28 +130,29 @@ getPriceInfo: (json, coin) ->
     <div class='price #{color}'>$ #{@numberWithCommas(@roundAmount(price, coin.round))}<div>
     <!--<div class='badge default'>Last Price</div>-->
     <div class='value '>$ #{@numberWithCommas(@roundAmount(value, 2))}</div>
-    <div class='currency default'>Hodling: #{@numberWithCommas(hodl)} RANK: #{rank } #{emoji} #{change}%</div>
+    <div class='currency default'>Rank: #{rank } <br/>Hodling: #{@numberWithCommas(hodl)} <br/> 1HR:#{change}% #{emoji}  24HR: #{change_24hr}% #{emoji2} 7D: #{change_7d}% #{emoji3}</div>
   """, value: value}
 
 
 style: """
   bottom: 0%
-  left: 6%
+  left: 0%
   color: white
   font-family: 'Helvetica Neue'
   font-weight: 100
   text-align: left
   margin: 5px
-  width: 200px
+  width: 250px
   text-align: center
+  
   .box
     padding: 2px
     opacitiy: .3
-    border: 1px solid black
     font-size: 18px
+    
     .price
     
-      font-size: 20px
+      font-size: 24px
     .ticker, .lastUpdated
       text-align: left
     .currency, .badge
@@ -162,7 +167,9 @@ style: """
       letter-spacing: 1px
       margin: 0px
       color: white
-    
+    .currency
+        text-align: center
+         
     .green
       color: white
       background-color: rgba(0, 255, 0, 0.5)
