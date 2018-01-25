@@ -102,8 +102,8 @@ roundAmount: (amount, precision) ->
     return rv
 
 numberWithCommas: (x) ->
-  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-
+  y =if (x>1) then x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ","); else x 
+  return y
 ###
     Gets price information for a given coin
 
